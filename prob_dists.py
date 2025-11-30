@@ -1,7 +1,8 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from scipy.special import gamma
+#from scipy.special import gamma
+from scipy.special import factorial
 
 data_dict = {
     'Normal': {
@@ -101,7 +102,8 @@ elif model =='Poisson':
     my_lambda = set_up_slider(model, 'lambda')
     low, high, steps = get_settings(model)
     x = np.linspace(low, high, steps)
-    y = my_lambda ** x * np.exp(-1*my_lambda) / gamma(x + 1)
+    #y = my_lambda ** x * np.exp(-1*my_lambda) / gamma(x + 1)
+    y = my_lambda ** x * np.exp(-1*my_lambda) / factorial(x)
     df = pd.DataFrame({'x': x, 'y': y}).set_index('x')
     st.scatter_chart(df, x_label='x', y_label='Probability Density')
 elif model =='Bernoulli':
