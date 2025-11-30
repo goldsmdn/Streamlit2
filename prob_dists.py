@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from scipy.special import factorial
+from scipy.special import factorial, comb
 
 data_dict = {
     'Normal': {
@@ -52,7 +52,21 @@ data_dict = {
                         'text':'Possible outcomes',
                         },
                 }
-            }        
+            },
+    'Binomial': {
+        'vars': {
+                'p': {'low':0.0,
+                        'high':1.0,
+                        'default':0.5,
+                        'text':'Probability',
+                        },
+                'n': {'low':0,
+                        'high':40,
+                        'default':5,
+                        'text':'Sample_size',
+                        },
+                }
+            }         
         }     
 
 
@@ -62,7 +76,7 @@ st.write('This module allows the user to quickly generate and visualize various 
 
 
 model = st.selectbox("Please choose a model to work with:",
-                    ('Normal', 'Poisson', 'Bernoulli', )
+                    ('Normal', 'Poisson', 'Bernoulli','Binomial' )
                     )
 
 def get_settings(model:str)->tuple[float, float, float]:
@@ -111,6 +125,13 @@ elif model =='Bernoulli':
     y = p * x  + (1 - p) * (1 - x)
     df = pd.DataFrame({'x': x, 'y': y}).set_index('x')
     st.bar_chart(df, x_label='x', y_label='Probability Density')
-
+elif model == 'Binomial':
+    p = set_up_slider(model, 'p')
+    n = set_up_slider(model, 'n')
+    low, high, steps = 0 , n, n + 1
+    x = np.linspace(low, high, steps)
+    y = comb(n, x) * p**x * (1 - p)**(n-x)
+    df = pd.DataFrame({'x': x, 'y': y}).set_index('x')
+    st.bar_chart(df, x_label='x', y_label='Probability Density')
 else:
     raise Exception(f'{model=} is not coded for')
